@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+      <style>
+      h1 {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+#word {
+  border: 1px solid black;
+  background-color: white;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+#incorrect-guesses {
+  font-style: italic;
+  color: red;
+}
+
+#letter-input {
+  font-size: 16px;
+  text-align: center;
+}
+
+#submit-button {
+  font-size: 16px;
+  background-color: rgb(140, 0, 255);
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  color:white
+}
+
+#message {
+  font-size: 24px;
+  font-weight: bold;
+}
+#translation{
+    font-size: xx-large;
+    color: rgb(217, 0, 255);
+}
+body{ background-color: aqua;}
+
+      </style>
+    <h1>Prelož Slovíčko</h1>
+    <p>Slovíčko:</p>
+<div id="translation"></div>
+
+    <p>Uhádni slovo:</p>
+    <div id="word"></div>
+    <p>Nesprávne :</p>
+    <div id="incorrect-guesses"></div>
+    <p>Písmeno:</p>
+    <input type="text" id="letter-input" maxlength="1">
+    <button id="submit-button">Vložiť</button>
+    <p id="message"></p>
+  </body>
+  <script>
+  const words = ["quarter", "district", "neighborhood"];
+const translations = {
+  quarter: "Štvrť",
+  district: "Okres",
+  neighborhood: "Susedstvo"
+};
+
+// select a random word from the words array
+const word = words[Math.floor(Math.random() * words.length)];
+
+// look up the translation of the word in the dictionary
+const translation = translations[word];
+
+// display the translation on the page
+const translationEl = document.getElementById("translation");
+translationEl.innerHTML = translation;
+ // the word to guess
+    const maxIncorrectGuesses = 6; // the maximum number of incorrect guesses allowed
+    let incorrectGuesses = 0; // the number of incorrect guesses made so far
+    let correctLetters = new Set(); // the correct letters that have been guessed so far
+    let incorrectLetters = new Set(); // the incorrect letters that have been guessed so far
+    
+    // Update the display to show the initial game state
+    function updateDisplay() {
+      // show the correct letters in the word
+      const wordEl = document.getElementById("word");
+      wordEl.innerHTML = Array.from(word).map(letter => (correctLetters.has(letter) ? letter : " _ ")).join("");
+    
+      // show the incorrect letters
+      const incorrectGuessesEl = document.getElementById("incorrect-guesses");
+      incorrectGuessesEl.innerHTML = Array.from(incorrectLetters).join(" ");
+    
+      // check if the player has won or lost
+      const messageEl = document.getElementById("message");
+      if (incorrectGuesses === maxIncorrectGuesses) {
+        messageEl.innerHTML = "You lose!";
+      } else if (word.split("").every(letter => correctLetters.has(letter))) {
+        messageEl.innerHTML = "You win!";
+      }
+    }
+    
+    updateDisplay();
+    // get a reference to the letter input and submit button
+const letterInput = document.getElementById("letter-input");
+const submitButton = document.getElementById("submit-button");
+
+// add an event listener to the submit button
+submitButton.addEventListener("click", () => {
+  // get the letter that the player entered
+  const letter = letterInput.value.toLowerCase();
+
+  // clear the input field
+  letterInput.value = "";
+
+  // if the letter has already been guessed, do nothing
+  if (correctLetters.has(letter) || incorrectLetters.has(letter)) {
+    return;
+  }
+
+  // if the letter is in the word, add it to the correct letters
+  if (word.includes(letter)) {
+    correctLetters.add(letter);
+  } else {
+    // otherwise, add it to the incorrect letters and increment the number of incorrect guesses
+    incorrectLetters.add(letter);
+    incorrectGuesses++;
+  }
+
+  // update the display
+  updateDisplay();
+});
+
+    </script>
+</html>
